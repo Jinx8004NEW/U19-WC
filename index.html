@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket U19 World Cup | Jinx8004 - Live Stream</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/controls.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.ui.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body, html {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            color: #fff;
+        }
+        
+        /* Main container */
+        .main-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #000;
+        }
+        
+        /* Header section */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+        
+        .match-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+        
+        .match-title {
+            font-size: clamp(16px, 2.5vw, 22px);
+            font-weight: 700;
+            background: linear-gradient(90deg, #ff4d4d, #ff9a3d);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .match-subtitle {
+            font-size: clamp(12px, 1.5vw, 14px);
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #ff4d4d;
+            font-weight: 600;
+            font-size: 11px;
+            padding: 2px 8px;
+            background: rgba(255, 77, 77, 0.1);
+            border-radius: 12px;
+        }
+        
+        .live-pulse {
+            width: 6px;
+            height: 6px;
+            background: #ff4d4d;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+        
+        /* Dropdown menu */
+        .dropdown {
+            position: relative;
+            min-width: 200px;
+        }
+        
+        .dropdown-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            min-width: 200px;
+        }
+        
+        .dropdown-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .dropdown-btn i {
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+        
+        .dropdown-btn.active i {
+            transform: rotate(180deg);
+        }
+        
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-top: 5px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+            overflow: hidden;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .dropdown-content.active {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 12px 15px;
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+        
+        .dropdown-item.active {
+            background: rgba(229, 9, 20, 0.2);
+            color: #fff;
+            border-left: 3px solid #e50914;
+        }
+        
+        .dropdown-match {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        
+        .dropdown-tournament {
+            font-size: 11px;
+            color: #aaa;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-width: 140px;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: #ddd;
+        }
+        
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        
+        /* Video container - Responsive */
+        .video-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            background: #000;
+        }
+        
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+        
+        /* Footer - Always visible */
+        .footer {
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+            z-index: 10;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .connection-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+        
+        .connection-text {
+            color: #aaa;
+        }
+        
+        .connection-text strong {
+            color: #ddd;
+        }
+        
+        .timestamp {
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        
+        /* Loading indicator */
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            display: none;
+            text-align: center;
+        }
+        
+        .loading-indicator.active {
+            display: block;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #e50914;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        /* Mobile-specific styles */
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px 15px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            
+            .header-left {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .match-info {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .dropdown {
+                min-width: 100%;
+            }
+            
+            .dropdown-btn {
+                min-width: 100%;
+            }
+            
+            .dropdown-content {
+                position: fixed;
+                top: 130px;
+                left: 15px;
+                right: 15px;
+                max-height: 60vh;
+            }
+            
+            .user-info {
+                align-self: flex-start;
+                min-width: auto;
+            }
+            
+            .footer {
+                padding: 8px 15px;
+                font-size: 11px;
+            }
+            
+            .connection-status {
+                min-width: auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 8px 12px;
+            }
+            
+            .footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .connection-status, .timestamp {
+                width: 100%;
+            }
+        }
+        
+        /* Landscape mode optimization */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .header {
+                padding: 8px 15px;
+            }
+            
+            .dropdown-content {
+                max-height: 200px;
+            }
+            
+            .footer {
+                padding: 6px 15px;
+                font-size: 11px;
+            }
+        }
+        
+        /* Ensure video controls are accessible */
+        .shaka-video-container {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        .shaka-bottom-controls {
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8)) !important;
+        }
+        
+        .shaka-range-element {
+            color: #e50914 !important;
+        }
+        
+        .shaka-play-button-container button {
+            background: rgba(229, 9, 20, 0.9);
+            border-radius: 50%;
+        }
+        
+        /* Custom scrollbar for dropdown */
+        .dropdown-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .dropdown-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+        
+        .dropdown-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+        
+        .dropdown-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header with match info and dropdown -->
+        <div class="header">
+            <div class="header-left">
+                <div class="match-info">
+                    <div class="match-title" id="currentMatchTitle">Select a Match</div>
+                    <div class="match-subtitle">
+                        <span class="live-indicator">
+                            <span class="live-pulse"></span>
+                            LIVE
+                        </span>
+                        <span id="currentTournament">ICC U19 Cricket World Cup</span>
+                    </div>
+                </div>
+                
+                <!-- Dropdown menu for match selection -->
+                <div class="dropdown">
+                    <button class="dropdown-btn" id="dropdownBtn">
+                        <span id="dropdownText">Select Match</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-content" id="dropdownContent">
+                        <!-- Match options will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="user-info">
+                <div class="user-avatar">J</div>
+                <div class="user-name">Jinx8004</div>
+            </div>
+        </div>
+        
+        <!-- Video container -->
+        <div class="video-container" data-shaka-player-container>
+            <!-- Loading indicator -->
+            <div class="loading-indicator" id="loadingIndicator">
+                <div class="spinner"></div>
+                <div class="loading-text">Loading Stream...</div>
+            </div>
+            
+            <video data-shaka-player id="video" autoplay crossorigin="anonymous"></video>
+        </div>
+        
+        <!-- Footer with connection info -->
+        <div class="footer">
+            <div class="connection-status">
+                <div class="connection-dot"></div>
+                <div class="connection-text">
+                    Stream: <strong>Akamai CDN</strong> • Protocol: <strong>DASH</strong> • Status: <strong id="streamStatus">Select a match</strong>
+                </div>
+            </div>
+            
+            <div class="timestamp">
+                <i class="far fa-clock"></i>
+                <span id="currentTime">--:--:--</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Define all available streams
+        const streams = [
+            {
+                id: 'aus-vs-ire',
+                title: 'AUS vs IRE U19',
+                tournament: 'ICC U19 Cricket World Cup',
+                manifest: 'https://a201aivottlinear-a.akamaihd.net/OTTB/lhr-nitro/clients/dash/enc/oc3slvlq7n/out/v1/e4b93c0e3e4d4dcb9527c5b0dfe2ae90/cenc.mpd?%7CdrmScheme=clearkey&drmLicense=b86fa94988debfa3f1dff4cfd0d45345:ab64c1dc3e8f309e61cf0c8318618f05',
+                keys: {
+                    'b86fa94988debfa3f1dff4cfd0d45345': 'ab64c1dc3e8f309e61cf0c8318618f05'
+                }
+            },
+            {
+                id: 'sa-vs-afg',
+                title: 'SA vs AFG U19',
+                tournament: 'ICC U19 Cricket World Cup',
+                manifest: 'https://a201aivottlinear-a.akamaihd.net/OTTB/lhr-nitro/clients/dash/enc/3horuf8yft/out/v1/3b4484f853394bc9b0793be59aaba70a/cenc.mpd?%7CdrmScheme=clearkey&drmLicense=da661ad935054591590c7487368b26f3:10229bfa52d2e601b3e88b7951dc0bae',
+                keys: {
+                    'da661ad935054591590c7487368b26f3': '10229bfa52d2e601b3e88b7951dc0bae'
+                }
+            },
+            {
+                id: 'pak-vs-eng',
+                title: 'PAK vs ENG U19',
+                tournament: 'ICC U19 Cricket World Cup',
+                manifest: 'https://a201aivottlinear-a.akamaihd.net/OTTB/lhr-nitro/clients/dash/enc/b5sgygmi5r/out/v1/450d606c6a17471f84d09372f55004e2/cenc.mpd?%7CdrmScheme=clearkey&drmLicense=f159241d40e659d58e81bc17ca30da31:6b7fe24f7a16343bd447b0b30f68b7b2',
+                keys: {
+                    'f159241d40e659d58e81bc17ca30da31': '6b7fe24f7a16343bd447b0b30f68b7b2'
+                }
+            }
+        ];
+
+        // Global variables
+        let player = null;
+        let ui = null;
+        let currentStream = null;
+
+        async function init() {
+            const video = document.getElementById('video');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const streamStatus = document.getElementById('streamStatus');
+            const currentMatchTitle = document.getElementById('currentMatchTitle');
+            const currentTournament = document.getElementById('currentTournament');
+            const dropdownBtn = document.getElementById('dropdownBtn');
+            const dropdownContent = document.getElementById('dropdownContent');
+            const dropdownText = document.getElementById('dropdownText');
+
+            // Initialize player
+            player = new shaka.Player(video);
+            ui = new shaka.ui.Overlay(player, video.parentElement, video);
+
+            // Configure player
+            player.configure({
+                streaming: {
+                    bufferingGoal: 30,
+                    rebufferingGoal: 5,
+                    bufferBehind: 30,
+                    jumpLargeGaps: true,
+                    lowLatencyMode: false
+                },
+                manifest: {
+                    dash: {
+                        ignoreMinBufferTime: true,
+                        autoCorrectDrift: true,
+                        initialSegmentLimit: 20
+                    }
+                }
+            });
+
+            player.configure('streaming.presentationDelay', 20);
+
+            ui.configure({
+                'controlPanelElements': ['play_pause', 'time_and_duration', 'spacer', 'mute', 'volume', 'fullscreen', 'overflow_menu'],
+                'overflowMenuButtons': ['quality'] 
+            });
+
+            // Populate dropdown with match options
+            function populateDropdown() {
+                dropdownContent.innerHTML = '';
+                
+                streams.forEach((stream) => {
+                    const dropdownItem = document.createElement('div');
+                    dropdownItem.className = 'dropdown-item';
+                    dropdownItem.dataset.id = stream.id;
+                    
+                    dropdownItem.innerHTML = `
+                        <div class="dropdown-match">${stream.title}</div>
+                        <div class="dropdown-tournament">${stream.tournament}</div>
+                    `;
+                    
+                    dropdownItem.addEventListener('click', () => {
+                        loadStream(stream);
+                        dropdownBtn.classList.remove('active');
+                        dropdownContent.classList.remove('active');
+                        
+                        // Update active state
+                        document.querySelectorAll('.dropdown-item').forEach(item => {
+                            item.classList.remove('active');
+                        });
+                        dropdownItem.classList.add('active');
+                    });
+                    
+                    dropdownContent.appendChild(dropdownItem);
+                });
+            }
+
+            // Toggle dropdown menu
+            dropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownBtn.classList.toggle('active');
+                dropdownContent.classList.toggle('active');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', () => {
+                dropdownBtn.classList.remove('active');
+                dropdownContent.classList.remove('active');
+            });
+
+            // Prevent dropdown from closing when clicking inside
+            dropdownContent.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Populate dropdown initially
+            populateDropdown();
+
+            // Load first stream by default
+            if (streams.length > 0) {
+                loadStream(streams[0]);
+                // Set first item as active in dropdown
+                const firstItem = dropdownContent.querySelector('.dropdown-item');
+                if (firstItem) {
+                    firstItem.classList.add('active');
+                }
+                dropdownText.textContent = streams[0].title;
+            }
+
+            // Keyboard controls setup
+            function setupKeyboardControls() {
+                document.addEventListener('keydown', (e) => {
+                    // Don't trigger if user is typing in an input field
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                        return;
+                    }
+                    
+                    switch(e.key.toLowerCase()) {
+                        case ' ':
+                        case 'k':
+                            e.preventDefault();
+                            if (video.paused) {
+                                video.play();
+                            } else {
+                                video.pause();
+                            }
+                            break;
+                            
+                        case 'm':
+                            video.muted = !video.muted;
+                            break;
+                            
+                        case 'f':
+                            toggleFullscreen();
+                            break;
+                            
+                        case 'escape':
+                            if (document.fullscreenElement) {
+                                document.exitFullscreen();
+                            }
+                            dropdownBtn.classList.remove('active');
+                            dropdownContent.classList.remove('active');
+                            break;
+                            
+                        case 'arrowleft':
+                            e.preventDefault();
+                            video.currentTime = Math.max(0, video.currentTime - 10);
+                            break;
+                            
+                        case 'arrowright':
+                            e.preventDefault();
+                            video.currentTime = Math.min(video.duration, video.currentTime + 10);
+                            break;
+                            
+                        case 'arrowup':
+                            e.preventDefault();
+                            video.volume = Math.min(1, video.volume + 0.1);
+                            break;
+                            
+                        case 'arrowdown':
+                            e.preventDefault();
+                            video.volume = Math.max(0, video.volume - 0.1);
+                            break;
+                            
+                        // Number keys 1-3 for quick match switching
+                        case '1':
+                            if (streams[0]) loadStream(streams[0]);
+                            break;
+                        case '2':
+                            if (streams[1]) loadStream(streams[1]);
+                            break;
+                        case '3':
+                            if (streams[2]) loadStream(streams[2]);
+                            break;
+                            
+                        // Number keys 0-9 for seeking
+                        case '0':
+                        case '4':
+                        case '5':
+                        case '6':
+                        case '7':
+                        case '8':
+                        case '9':
+                            if (!isNaN(video.duration)) {
+                                const percentage = parseInt(e.key) / 10;
+                                video.currentTime = video.duration * percentage;
+                            }
+                            break;
+                    }
+                });
+                
+                function toggleFullscreen() {
+                    if (!document.fullscreenElement) {
+                        if (video.requestFullscreen) {
+                            video.requestFullscreen();
+                        } else if (video.webkitRequestFullscreen) {
+                            video.webkitRequestFullscreen();
+                        } else if (video.mozRequestFullScreen) {
+                            video.mozRequestFullScreen();
+                        } else if (video.msRequestFullscreen) {
+                            video.msRequestFullscreen();
+                        }
+                    } else {
+                        if (document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if (document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        } else if (document.mozCancelFullScreen) {
+                            document.mozCancelFullScreen();
+                        } else if (document.msExitFullscreen) {
+                            document.msExitFullscreen();
+                        }
+                    }
+                }
+            }
+
+            // Load stream function
+            async function loadStream(stream) {
+                if (currentStream === stream.id) return;
+                
+                currentStream = stream.id;
+                currentMatchTitle.textContent = stream.title;
+                currentTournament.textContent = stream.tournament;
+                dropdownText.textContent = stream.title;
+                
+                loadingIndicator.classList.add('active');
+                streamStatus.textContent = 'Loading...';
+                streamStatus.style.color = '';
+                
+                try {
+                    console.log('Loading stream:', stream.title);
+                    
+                    // Unload previous stream
+                    await player.unload();
+                    
+                    // Configure DRM for this stream
+                    player.configure({
+                        drm: {
+                            clearKeys: stream.keys
+                        }
+                    });
+                    
+                    // Load new stream
+                    await player.load(stream.manifest);
+                    
+                    console.log('Stream loaded successfully:', stream.title);
+                    streamStatus.textContent = 'Stable';
+                    loadingIndicator.classList.remove('active');
+                    
+                } catch (error) {
+                    console.error('Error loading stream:', stream.title, error);
+                    streamStatus.textContent = 'Failed to load';
+                    streamStatus.style.color = '#ff4d4d';
+                    loadingIndicator.classList.remove('active');
+                }
+            }
+
+            // Setup keyboard controls
+            setupKeyboardControls();
+
+            // Update current time
+            function updateTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], {hour12: false});
+                document.getElementById('currentTime').innerText = timeString;
+            }
+            
+            updateTime();
+            setInterval(updateTime, 1000);
+
+            // Handle player errors
+            player.addEventListener('error', (event) => {
+                console.error('Player error:', event.detail);
+                loadingIndicator.classList.remove('active');
+                streamStatus.textContent = 'Error';
+                streamStatus.style.color = '#ff4d4d';
+            });
+
+            // Handle buffering events
+            player.addEventListener('buffering', (event) => {
+                if (event.buffering) {
+                    loadingIndicator.classList.add('active');
+                    streamStatus.textContent = 'Buffering...';
+                } else {
+                    loadingIndicator.classList.remove('active');
+                    streamStatus.textContent = 'Stable';
+                }
+            });
+
+            // Monitor latency and maintain buffer
+            setInterval(() => {
+                try {
+                    if (player && player.isLive()) {
+                        const liveEdge = player.seekRange().end;
+                        if ((liveEdge - video.currentTime) < 10) {
+                            video.currentTime = liveEdge - 20;
+                        }
+                    }
+                } catch (e) {
+                    // Ignore errors
+                }
+            }, 1000);
+        }
+
+        // Initialize when Shaka Player is loaded
+        if (window.shaka) {
+            init();
+        } else {
+            document.addEventListener('shaka-ui-loaded', init);
+        }
+    </script>
+</body>
+</html>
